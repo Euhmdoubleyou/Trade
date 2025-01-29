@@ -1,0 +1,100 @@
+/project-root
+├── data/               # Raw en processed data
+├── notebooks/          # Jupyter notebooks voor experimenten
+├── src/                # Python code
+│   ├── data_processing.py
+│   └── model_training.py
+├── config.yaml         # API-keys, parameters
+├── README.md           # Documentatie
+└── requirements.txt    # Python Libraries
+
+TIPS 
+
+Stap 7: Documentatie en Version Control
+Voor jou cruciaal:
+
+Schrijf een README.md met:
+
+Hoe de code te draaien
+
+Data-bronnen
+
+Belangrijke keuzes (bijv. "Waarom Logistic Regression?")
+
+Gebruik Git vanaf dag 1:
+
+Copy
+git init
+git add .
+git commit -m "Eerste versie: data preprocessing"
+Clean Code Tips
+Geen "magische getallen":
+
+python
+Copy
+# Slecht
+data['SMA_50'] = data['Close'].rolling(50).mean()
+
+# Goed
+WINDOW_SIZE = 50
+data[f'SMA_{WINDOW_SIZE}'] = data['Close'].rolling(WINDOW_SIZE).mean()
+Functies moeten 1 ding doen:
+
+python
+Copy
+# Slecht
+def process_data_and_train_model(df):
+    ...
+
+# Goed
+def preprocess_data(df):
+    ...
+
+def train_model(X, y):
+    ...
+Tijdsmanagement Advies
+Gebruik Agile-principes:
+
+Deel het project op in kleine taken (bijv. "Data cleaning afronden")
+
+Werk met deadlines ("Vandaag EOD: EDA afgerond")
+
+Tools:
+
+Trello voor takenlijsten
+
+Pomodoro Timer (25 min focussen, 5 min pauze)
+
+Valkuilen om te Vermijden
+Overfitting:
+
+Test nooit op dezelfde data als waarop je trainde.
+
+Gebruik TimeSeriesSplit van scikit-learn.
+
+Data Leakage:
+
+Zorg ervoor dat features geen toekomstige informatie bevatten (bijv. Close.shift(-1)).
+
+Emotionele Bias:
+
+Ook al heb je een model, vertrouw niet blindelings op voorspellingen. De markt is chaotisch!
+
+Bonus: Echte Wereld Feedback Loop
+Professionals doen dit continu:
+
+Copy
+[Data Verzamelen] → [Preprocessing] → [Model Trainen] → [Backtesten] → [Analyse] → [Model Aanpassen]
+Volgende Stappen Voor Jou
+Begin met een simpel model (logistic regression) om een baseline te krijgen.
+
+Schrijf elke dag 10 regels documentatie.
+
+Gebruik een requirements.txt voor dependencies:
+
+Copy
+yfinance==0.2.28
+scikit-learn==1.4.0
+pandas==2.0.3
+Als je specifieke code wilt laten reviewen, deel dan een snippet via Pastebin of GitHub Gist, en ik geef feedback op codekwaliteit. Succes, en onthoud: consistentie is belangrijker dan perfectie! 🚀
+
