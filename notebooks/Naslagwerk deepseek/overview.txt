@@ -1,10 +1,12 @@
-/project-root
-├── data/               # Raw en processed data
-├── notebooks/          # Jupyter notebooks voor experimenten
-├── src/                # Python code
-│   ├── data_processing.py
-│   └── model_training.py
-├── config.yaml         # API-keys, parameters
+/aandelen-project
+├── data/
+│   ├── raw/          # AAPL.csv, MSFT.csv, etc.
+│   └── processed/    # Bewerkte data
+├── src/
+│   ├── data.py       # Data ophalen + preprocessen (stap 1)
+│   ├── model.py      # Model trainen + voorspellen (stap 2)
+│   └── evaluate.py   # Evaluatie + filtering (stap 3)
+├── main.py           # Alles aansturen (hoofdscript)
 ├── README.md           # Documentatie
 └── requirements.txt    # Python Libraries
 
