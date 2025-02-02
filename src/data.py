@@ -7,6 +7,8 @@ DATA_DIR = Path(__file__).parent.parent / "data" / "raw"
 
 def download_stock_data(symbol, years=21):
     """Download historische data voor een aandeel."""
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    
     end_date = pd.Timestamp.now() - pd.DateOffset(years=1)  # Tot 1 jaar geleden
     start_date = end_date - pd.DateOffset(years=years)
     
