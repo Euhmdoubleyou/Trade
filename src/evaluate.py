@@ -21,7 +21,7 @@ def check_symbol(symbol, true_directions, predicted_directions, threshold):
     else:
         print(f"{symbol} voldoet niet aan de drempel van {threshold*100}%")
         
-    remove_raw_data(symbol)
+    #remove_raw_data(symbol)
 
 def remove_raw_data(symbol):
     #"""Verwijdert het .csv bestand uit de data\raw map."""
