@@ -21,7 +21,7 @@ def check_symbol(symbol, true_directions, predicted_directions, threshold):
     else:
         print(f"{symbol} voldoet niet aan de drempel van {threshold*100}%")
         
-    #remove_raw_data(symbol)
+    remove_raw_data(symbol)
 
 def remove_raw_data(symbol):
     #"""Verwijdert het .csv bestand uit de data\raw map."""
@@ -35,6 +35,13 @@ def remove_raw_data(symbol):
 def main():
     # Implementeer de logica om symbolen te checken en te filteren
     pass
+
+
+def calculate_consecutive_up_days(prices):
+    """Bereken het maximale aantal opeenvolgende stijgende dagen."""
+    up_days = (prices > prices.shift(1)).astype(int)
+    streaks = up_days * (up_days.groupby((up_days != up_days.shift()).cumsum()).cumcount() + 1)
+    return streaks.max()
 
 if __name__ == "__main__":
     main()
