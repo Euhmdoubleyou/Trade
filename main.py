@@ -6,64 +6,73 @@ from src.evaluate import evaluate_predictions, filter_top_performers, check_symb
 from sklearn.model_selection import TimeSeriesSplit, train_test_split
 from sklearn.model_selection import GridSearchCV
 from sklearn.ensemble import RandomForestClassifier
+from src.symbollist import symbols
 import pandas as pd
 import warnings
 warnings.filterwarnings("ignore", category=FutureWarning, module="yfinance")
 
 # Configuratie
-SYMBOLS = ["AAPL", "MSFT", "GOOGL"]  # Uitbreidbaar met meer aandelen
+SYMBOLS = symbols # Uitbreidbaar met meer aandelen
 YEARS_HISTORY = 21
-
 results = []
 
 for symbol in SYMBOLS:
     # Stap 1: Data ophalen en verwerken
-    raw_data = download_stock_data(symbol, YEARS_HISTORY)
-    processed_data = preprocess_data(raw_data)
     
-    # Stap 2: Model trainen
-    X, y = create_features_optimized(processed_data)
-    if len(X) != len(y):
-    # Handle the length mismatch here, e.g., by dropping extra rows
-        X = X[:len(y)]
-        y = y[:len(X)]
+    try: 
+        raw_data = download_stock_data(symbol, YEARS_HISTORY)
+        processed_data = preprocess_data(raw_data)
+        
+        # Stap 2: Model trainen
+        X, y = create_features_optimized(processed_data)
+        if len(X) != len(y):
+        # Handle the length mismatch here, e.g., by dropping extra rows
+            X = X[:len(y)]
+            y = y[:len(X)]
 
-    tscv = TimeSeriesSplit(n_splits=5)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=False)
-    model = train_model(X_train, y_train)
-    
-    param_grid = {
-        'n_estimators': [100, 200],
-        'max_depth': [None, 10],
-        'min_samples_split': [2, 5],
-        'max_features': ['sqrt', 'log2']
-    }
+        tscv = TimeSeriesSplit(n_splits=5)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=False)
+        model = train_model(X_train, y_train)
+        
+        param_grid = {
+            'n_estimators': [100, 200],
+            'max_depth': [None, 10],
+            'min_samples_split': [2, 5],
+            'max_features': ['sqrt', 'log2']
+        }
 
-    model = GridSearchCV(
-        estimator=RandomForestClassifier(random_state=42),
-        param_grid=param_grid,
-        cv=tscv,
-        scoring='accuracy',
-        n_jobs=-1
-    )
-    model.fit(X_train, y_train)
-    best_model = model.best_estimator_
+        model = GridSearchCV(
+            estimator=RandomForestClassifier(random_state=42),
+            param_grid=param_grid,
+            cv=tscv,
+            scoring='accuracy',
+            n_jobs=-1
+        )
+        model.fit(X_train, y_train)
+        best_model = model.best_estimator_
 
-    test_prices = processed_data.iloc[-len(y_test):]['Close']
-    consecutive_up = calculate_consecutive_up_days(test_prices)
-    # Stap 3: Voorspellingen evalueren
-    predictions = model.predict(X_test)
-    true_directions = (y_test > y_test.shift(1)).fillna(0).astype(int)
-    predicted_directions = (predictions > predictions.mean()).astype(int)
-    accuracy = evaluate_predictions(y_test, predictions)
-    
-     # Oproepen van check_symbol methode
-    check_symbol(symbol, true_directions, predicted_directions, threshold=0.8)
+        test_prices = processed_data.iloc[-len(y_test):]['Close']
+        consecutive_up = calculate_consecutive_up_days(test_prices)
+        # Stap 3: Voorspellingen evalueren
+        predictions = model.predict(X_test)
+        true_directions = (y_test > y_test.shift(1)).fillna(0).astype(int)
+        predicted_directions = (predictions > predictions.mean()).astype(int)
+        accuracy = evaluate_predictions(y_test, predictions)
+        
+        # Oproepen van check_symbol methode
+        check_symbol(symbol, true_directions, predicted_directions, threshold=0.7)
 
-    results.append({"symbol": symbol, "accuracy": accuracy})
+        results.append({"symbol": symbol, "accuracy": accuracy})
+    except:
+        print(f"niet genoeg data beschikbaar voor {symbol}")
+        remove_raw_data(symbol)
+        continue
 
 # Filter beste resultaten
 top_performers = filter_top_performers(pd.DataFrame(results))
 print("Beste aandelen:", top_performers)
 
-
+""" for performer in results:
+    print(calculate_consecutive_up_days(performer))
+    
+ """

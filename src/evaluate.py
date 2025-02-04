@@ -7,7 +7,7 @@ def evaluate_predictions(true_directions, predicted_directions):
     accuracy = accuracy_score(true_directions, predicted_directions)
     return accuracy
 
-def filter_top_performers(results, threshold=0.8):
+def filter_top_performers(results, threshold=0.7):
     """Filter aandelen met een nauwkeurigheid boven de drempel."""
     return results[results["accuracy"] > threshold]
 
