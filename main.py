@@ -6,15 +6,16 @@ from src.evaluate import evaluate_predictions, filter_top_performers, check_symb
 from sklearn.model_selection import TimeSeriesSplit, train_test_split
 from sklearn.model_selection import GridSearchCV
 from sklearn.ensemble import RandomForestClassifier
-from src.symbollist import symbols
+from src.symbollist import symbollist
 import pandas as pd
 import warnings
 warnings.filterwarnings("ignore", category=FutureWarning, module="yfinance")
 
 # Configuratie
-SYMBOLS = symbols # Uitbreidbaar met meer aandelen
+SYMBOLS = symbollist # Uitbreidbaar met meer aandelen
 YEARS_HISTORY = 21
 results = []
+Threshold = 0.7
 
 for symbol in SYMBOLS:
     # Stap 1: Data ophalen en verwerken
@@ -59,19 +60,30 @@ for symbol in SYMBOLS:
         predicted_directions = (predictions > predictions.mean()).astype(int)
         accuracy = evaluate_predictions(y_test, predictions)
         
+        test_prices = processed_data.iloc[-len(y_test):]['Close']  # Prijzen in de testperiode
+        max_consecutive_up = calculate_consecutive_up_days(test_prices)
+        
+        latest_prediction = model.predict(X.iloc[[-1]])  # Gebruik de laatste beschikbare data
+        is_rising = "Ja" if latest_prediction[0] == 1 else "Nee"
+        
         # Oproepen van check_symbol methode
-        check_symbol(symbol, true_directions, predicted_directions, threshold=0.7)
-
-        results.append({"symbol": symbol, "accuracy": accuracy})
+        results.append({
+        "symbol": symbol,
+        "accuracy": accuracy,
+        "stijging_verwacht": is_rising,
+        "max_opvolgende_stijgingen_test": max_consecutive_up,
+        })
+        
+        check_symbol(symbol, true_directions, predicted_directions, threshold=Threshold)
     except:
         print(f"niet genoeg data beschikbaar voor {symbol}")
         remove_raw_data(symbol)
         continue
 
 # Filter beste resultaten
-top_performers = filter_top_performers(pd.DataFrame(results))
-print("Beste aandelen:", top_performers)
-
+top_performers = filter_top_performers(pd.DataFrame(results), threshold=Threshold)
+print("\nTop performers (nauwkeurigheid > 70%):")
+print(top_performers[['symbol', 'accuracy', 'stijging_verwacht', 'max_opvolgende_stijgingen_test']])
 """ for performer in results:
     print(calculate_consecutive_up_days(performer))
     
