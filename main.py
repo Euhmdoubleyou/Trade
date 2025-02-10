@@ -12,7 +12,8 @@ import warnings
 warnings.filterwarnings("ignore", category=FutureWarning, module="yfinance")
 
 # Configuratie
-SYMBOLS = symbollist # Uitbreidbaar met meer aandelen
+# TryoutSymbols = ['QXO', 'PTITF', 'CSAN', 'CELH', 'MRNA',  'NVD'] # Om nieuwe code te proberen
+SYMBOLS = symbollist # Zie symbollist.py voor selectie welke aandelen sector
 YEARS_HISTORY = 21
 results = []
 Threshold = 0.7
