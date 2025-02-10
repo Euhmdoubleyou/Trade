@@ -7,9 +7,9 @@ def evaluate_predictions(true_directions, predicted_directions):
     accuracy = accuracy_score(true_directions, predicted_directions)
     return accuracy
 
-def filter_top_performers(results, threshold=0.7):
-    """Filter aandelen met een nauwkeurigheid boven de drempel."""
-    return results[results["accuracy"] > threshold]
+""" def filter_top_performers(results, threshold=0.7):
+    Filter aandelen met een nauwkeurigheid boven de drempel.
+    return results[results["accuracy"] > threshold]"""
 
 def check_symbol(symbol, true_directions, predicted_directions, threshold):
     """Checkt of een symbool aan de drempel voldoet."""
@@ -18,6 +18,9 @@ def check_symbol(symbol, true_directions, predicted_directions, threshold):
     
     if accuracy > threshold:
         print(f"{symbol} voldoet aan de drempel van {threshold*100}%")
+        return (symbol, true_directions, predicted_directions, threshold)
+
+        
     else:
         print(f"{symbol} voldoet niet aan de drempel van {threshold*100}%")
         

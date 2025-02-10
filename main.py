@@ -2,7 +2,7 @@
 from src.data import download_stock_data, preprocess_data
 from src.model import create_features_optimized, train_model
 from src.evaluate import calculate_consecutive_up_days
-from src.evaluate import evaluate_predictions, filter_top_performers, check_symbol, remove_raw_data
+from src.evaluate import evaluate_predictions, check_symbol, remove_raw_data
 from sklearn.model_selection import TimeSeriesSplit, train_test_split
 from sklearn.model_selection import GridSearchCV
 from sklearn.ensemble import RandomForestClassifier
@@ -68,6 +68,8 @@ for symbol in SYMBOLS:
         is_rising = "Ja" if latest_prediction[0] == 1 else "Nee"
         
         # Oproepen van check_symbol methode
+        check_symbol(symbol, true_directions, predicted_directions, threshold=Threshold)
+        
         results.append({
         "symbol": symbol,
         "accuracy": accuracy,
@@ -82,7 +84,7 @@ for symbol in SYMBOLS:
         continue
 
 # Filter beste resultaten
-top_performers = filter_top_performers(pd.DataFrame(results), threshold=Threshold)
+top_performers = pd.DataFrame(results)
 print("\nTop performers (nauwkeurigheid > 70%):")
 print(top_performers[['symbol', 'accuracy', 'stijging_verwacht', 'max_opvolgende_stijgingen_test']])
 """ for performer in results:
